@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#eaf2f5">
+  <meta name="description" content="A calm, interactive calendar and task planner for tablet and phone.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <title>Daymark — Calendar & Planner</title>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-lockup">
+        <div class="brand-mark">d.</div>
+        <div><div class="brand-name">daymark</div><div class="brand-tag">PLAN WITH INTENTION</div></div>
+      </div>
+      <button class="primary-add" id="addTaskBtn"><span>＋</span> New task</button>
+      <div class="side-label">WORKSPACE</div>
+      <button class="side-link active" data-view="month"><span class="nav-icon">▦</span> Calendar <span class="side-shortcut">M</span></button>
+      <button class="side-link" data-view="week"><span class="nav-icon">▤</span> Week view</button>
+      <button class="side-link" data-view="day"><span class="nav-icon">▣</span> Day view</button>
+      <button class="side-link" data-view="year"><span class="nav-icon">▦</span> Year overview</button>
+      <div class="side-label side-label-spaced">FOCUS</div>
+      <button class="side-link" id="todayFocus"><span class="nav-icon">◷</span> Today</button>
+      <button class="side-link" id="upcomingFocus"><span class="nav-icon">↗</span> Upcoming</button>
+      <button class="side-link" id="overdueFocus"><span class="nav-icon">!</span> Overdue</button>
+      <div class="sidebar-bottom">
+        <div class="side-label">YOUR LABELS</div>
+        <div id="sidebarLabels" class="sidebar-labels"></div>
+        <button class="side-link settings-link" id="settingsBtn"><span class="nav-icon">⚙</span> Settings & backup</button>
+        <div class="privacy-note"><span class="privacy-dot"></span> Private · Stored on this device</div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button>
+        <div class="breadcrumb"><span>Workspace</span><span class="crumb-slash">/</span><strong id="crumbView">Calendar</strong></div>
+        <div class="top-actions">
+          <div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="Search tasks, notes, tags…" aria-label="Search tasks"></div>
+          <button class="icon-btn" id="notificationBtn" title="Notification settings" aria-label="Notification settings">♧<i id="notificationDot"></i></button>
+          <button class="avatar" id="profileBtn" title="Workspace settings">D</button>
+        </div>
+      </header>
+
+      <section class="page-heading">
+        <div>
+          <div class="eyebrow" id="todayLabel">YOUR PLANNING SPACE</div>
+          <h1 id="periodHeading">November 2026</h1>
+          <p id="periodSubheading">Make room for what matters.</p>
+        </div>
+        <div class="heading-actions">
+          <button class="outline-btn" id="todayBtn">Today</button>
+          <div class="date-arrows"><button id="prevBtn" aria-label="Previous period">‹</button><button id="nextBtn" aria-label="Next period">›</button></div>
+          <button class="primary-add heading-add" id="headingAdd"><span>＋</span> Add task</button>
+        </div>
+      </section>
+
+      <section class="stat-strip" aria-label="Task summary">
+        <div class="stat-card"><div class="stat-icon blue">◷</div><div><span class="stat-caption">OPEN TASKS</span><strong id="statOpen">0</strong></div></div>
+        <div class="stat-card"><div class="stat-icon sand">✓</div><div><span class="stat-caption">COMPLETED</span><strong id="statDone">0</strong></div></div>
+        <div class="stat-card"><div class="stat-icon rose">!</div><div><span class="stat-caption">HIGH PRIORITY</span><strong id="statHigh">0</strong></div></div>
+        <div class="stat-card progress-stat"><div class="progress-copy"><span class="stat-caption">TODAY'S PROGRESS</span><strong id="statProgress">0%</strong></div><div class="progress-track"><span id="progressFill"></span></div></div>
+      </section>
+
+      <section class="toolbar">
+        <div class="view-switch" role="tablist" aria-label="Calendar view">
+          <button data-view="day" role="tab">Day</button><button data-view="week" role="tab">Week</button><button data-view="month" class="selected" role="tab">Month</button><button data-view="year" role="tab">Year</button>
+        </div>
+        <div class="filters">
+          <select id="labelFilter" aria-label="Filter by label"><option value="all">All labels</option></select>
+          <select id="priorityFilter" aria-label="Filter by priority"><option value="all">All priorities</option><option value="urgent">Urgent</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>
+          <select id="statusFilter" aria-label="Filter by status"><option value="open">Open tasks</option><option value="all">All tasks</option><option value="done">Completed</option></select>
+          <button class="clear-filters" id="clearFilters">Clear</button>
+        </div>
+      </section>
+
+      <section class="workspace-grid">
+        <div class="calendar-panel">
+          <div class="calendar-panel-head"><div><strong id="calendarTitle">November 2026</strong><span id="calendarHint">Select a date to open its agenda</span></div><div class="panel-head-right"><span class="today-key"><i></i> Today</span><button class="more-btn" id="calendarMore" title="Calendar options">•••</button></div></div>
+          <div id="calendarHost" class="calendar-host"></div>
+          <div class="calendar-legend" id="calendarLegend"></div>
+        </div>
+
+        <aside class="agenda-panel">
+          <div class="agenda-header">
+            <div><div class="eyebrow">DAY AGENDA</div><h2 id="agendaDate">Today</h2><p id="agendaSummary">Your selected day's plan</p></div>
+            <button class="round-add" id="agendaAdd" aria-label="Add task for selected date">＋</button>
+          </div>
+          <div class="agenda-metrics"><div><strong id="agendaOpen">0</strong><span>To do</span></div><div><strong id="agendaDone">0</strong><span>Done</span></div><div><strong id="agendaLabels">0</strong><span>Labels</span></div></div>
+          <div class="agenda-list" id="agendaList"></div>
+          <div class="quick-add"><span>＋</span><input id="quickAddInput" type="text" placeholder="Quick add a task…" autocomplete="off"><button id="quickAddSubmit" aria-label="Add quick task">↵</button></div>
+          <div class="agenda-footer"><span id="agendaFooterText">Nothing slips through the cracks.</span><button id="showDayTasks">Open day list ↗</button></div>
+        </aside>
+      </section>
+      <footer class="app-footer"><span>DAYMARK <b>•</b> CALM PLANNING, CLEAR DAYS</span><span id="saveStatus">All changes saved on this device</span></footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="taskModal" hidden>
+    <section class="modal task-modal" role="dialog" aria-modal="true" aria-labelledby="taskModalTitle">
+      <div class="modal-head"><div><div class="eyebrow">MAKE IT HAPPEN</div><h2 id="taskModalTitle">Create a task</h2></div><button class="close-btn" data-close="taskModal" aria-label="Close">×</button></div>
+      <form id="taskForm">
+        <input type="hidden" id="taskId">
+        <label class="field-label" for="taskTitle">Task title</label>
+        <input class="text-field title-field" id="taskTitle" maxlength="120" placeholder="What needs to get done?" required>
+        <div class="form-grid two">
+          <div><label class="field-label" for="taskDate">Date</label><input class="text-field" type="date" id="taskDate" required></div>
+          <div><label class="field-label" for="taskLabel">Label</label><select class="text-field" id="taskLabel"></select></div>
+        </div>
+        <div class="form-grid three">
+          <div><label class="field-label" for="taskStart">Start time</label><input class="text-field" type="time" id="taskStart"></div>
+          <div><label class="field-label" for="taskEnd">End time</label><input class="text-field" type="time" id="taskEnd"></div>
+          <div><label class="field-label" for="taskPriority">Priority</label><select class="text-field" id="taskPriority"><option value="medium">Medium</option><option value="urgent">Urgent</option><option value="high">High</option><option value="low">Low</option></select></div>
+        </div>
+        <div class="form-grid two">
+          <div><label class="field-label" for="taskRepeat">Repeat</label><select class="text-field" id="taskRepeat"><option value="none">Does not repeat</option><option value="daily">Every day</option><option value="weekly">Every week</option><option value="monthly">Every month</option><option value="yearly">Every year</option></select></div>
+          <div><label class="field-label" for="taskReminder">Reminder</label><input class="text-field" type="datetime-local" id="taskReminder"></div>
+        </div>
+        <label class="field-label" for="taskTags">Tags <span class="field-hint">Separate with commas</span></label>
+        <input class="text-field" id="taskTags" placeholder="e.g. exam, chapter 3, follow-up">
+        <label class="field-label" for="taskNotes">Notes</label>
+        <textarea class="text-field notes-field" id="taskNotes" rows="3" placeholder="Details, checklist, links or context…"></textarea>
+        <div class="form-actions"><button type="button" class="outline-btn" data-close="taskModal">Cancel</button><button type="submit" class="primary-add">Save task <span>→</span></button></div>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="settingsModal" hidden>
+    <section class="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-head"><div><div class="eyebrow">YOUR SPACE, YOUR RULES</div><h2 id="settingsTitle">Settings & backup</h2></div><button class="close-btn" data-close="settingsModal" aria-label="Close">×</button></div>
+      <div class="settings-section"><h3>Morning planning reminder</h3><p class="muted">Choose when Daymark should nudge you to review today's plan.</p>
+        <div class="setting-row"><label class="toggle-label"><input type="checkbox" id="dailyReminderEnabled"><span class="toggle-ui"></span> Daily morning reminder</label><input class="text-field time-setting" id="dailyReminderTime" type="time" value="07:00"></div>
+        <div class="notification-note" id="notificationStatus">Notifications have not been enabled yet.</div>
+        <div class="button-row"><button class="outline-btn" id="enableNotifications">Enable notifications</button><button class="outline-btn" id="testNotification">Send test</button></div>
+        <p class="fine-print">For tablet browser/PWA use, notifications are checked while Daymark is open and when you return to it. Exact morning alarms while the app is fully closed require a native Android build or a server push service. Notification permission and battery settings also matter.</p>
+      </div>
+      <div class="settings-section"><h3>Labels</h3><p class="muted">Edit your label names. Existing tasks keep their current label.</p><input id="labelsInput" class="text-field" placeholder="Study, Work, Personal…"><button class="outline-btn" id="saveLabels">Save labels</button></div>
+      <div class="settings-section"><h3>Data & calendar</h3><p class="muted">Your tasks stay on this device. Keep a backup before changing browsers or clearing site data.</p>
+        <div class="button-row wrap"><button class="outline-btn" id="exportJson">Download JSON backup</button><button class="outline-btn" id="importJsonBtn">Restore JSON backup</button><button class="outline-btn" id="exportCsv">Export CSV</button><button class="outline-btn" id="exportIcs">Export calendar (.ics)</button><button class="outline-btn" id="importCsvBtn">Import CSV</button></div>
+        <input type="file" id="jsonFile" accept="application/json,.json" hidden><input type="file" id="csvFile" accept=".csv,text/csv" hidden>
+        <div class="fine-print">Calendar export can be imported into Google Calendar, Samsung Calendar and other calendar apps. CSV is useful for spreadsheet edits and bulk task import.</div>
+      </div>
+      <div class="settings-bottom"><span class="privacy-dot"></span> Local-first storage · No account · No cloud sync</div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="dayModal" hidden><section class="modal day-modal" role="dialog" aria-modal="true" aria-labelledby="dayModalTitle"><div class="modal-head"><div><div class="eyebrow">YOUR SELECTED DATE</div><h2 id="dayModalTitle">Daily task list</h2></div><button class="close-btn" data-close="dayModal">×</button></div><div id="fullDayList" class="full-day-list"></div><div class="form-actions"><button class="outline-btn" data-close="dayModal">Close</button><button class="primary-add" id="dayModalAdd">＋ Add task</button></div></section></div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js" defer></script>
+</body>
+</html>

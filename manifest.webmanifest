@@ -1,0 +1,12 @@
+{
+  "name": "Daymark — Calendar & Planner",
+  "short_name": "Daymark",
+  "description": "A calm, local-first calendar and task planner.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f7f4ed",
+  "theme_color": "#eaf2f5",
+  "icons": [{ "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
