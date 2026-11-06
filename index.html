@@ -4,22 +4,23 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#eaf2f5">
-  <meta name="description" content="A calm, interactive calendar and task planner for tablet and phone.">
+  <meta name="description" content="A tablet-first command centre for calendar planning, task priorities and progress.">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./styles.css">
-  <title>Daymark — Calendar & Planner</title>
+  <title>Daymark 2.0 — Calendar & Planner</title>
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
-      <div class="brand-lockup">
+      <button class="brand-lockup brand-home" id="homeBrand" aria-label="Go to Daymark home">
         <div class="brand-mark">d.</div>
         <div><div class="brand-name">daymark</div><div class="brand-tag">PLAN WITH INTENTION</div></div>
-      </div>
+      </button>
       <button class="primary-add" id="addTaskBtn"><span>＋</span> New task</button>
       <div class="side-label">WORKSPACE</div>
-      <button class="side-link active" data-view="month"><span class="nav-icon">▦</span> Calendar <span class="side-shortcut">M</span></button>
+      <button class="side-link active" data-view="home"><span class="nav-icon">⌂</span> Home <span class="side-shortcut">H</span></button>
+      <button class="side-link" data-view="month"><span class="nav-icon">▦</span> Calendar <span class="side-shortcut">M</span></button>
       <button class="side-link" data-view="week"><span class="nav-icon">▤</span> Week view</button>
       <button class="side-link" data-view="day"><span class="nav-icon">▣</span> Day view</button>
       <button class="side-link" data-view="year"><span class="nav-icon">▦</span> Year overview</button>
@@ -27,6 +28,7 @@
       <button class="side-link" id="todayFocus"><span class="nav-icon">◷</span> Today</button>
       <button class="side-link" id="upcomingFocus"><span class="nav-icon">↗</span> Upcoming</button>
       <button class="side-link" id="overdueFocus"><span class="nav-icon">!</span> Overdue</button>
+      <button class="side-link" id="completedFocus"><span class="nav-icon">✓</span> Completed <span class="nav-count" id="completedNavCount">0</span></button>
       <div class="sidebar-bottom">
         <div class="side-label">YOUR LABELS</div>
         <div id="sidebarLabels" class="sidebar-labels"></div>
@@ -61,12 +63,31 @@
 
       <section class="stat-strip" aria-label="Task summary">
         <div class="stat-card"><div class="stat-icon blue">◷</div><div><span class="stat-caption">OPEN TASKS</span><strong id="statOpen">0</strong></div></div>
-        <div class="stat-card"><div class="stat-icon sand">✓</div><div><span class="stat-caption">COMPLETED</span><strong id="statDone">0</strong></div></div>
+        <button class="stat-card stat-card-button" id="completedStatCard" type="button" title="Open completed tasks"><div class="stat-icon sand">✓</div><div><span class="stat-caption">COMPLETED</span><strong id="statDone">0</strong></div></button>
         <div class="stat-card"><div class="stat-icon rose">!</div><div><span class="stat-caption">HIGH PRIORITY</span><strong id="statHigh">0</strong></div></div>
         <div class="stat-card progress-stat"><div class="progress-copy"><span class="stat-caption">TODAY'S PROGRESS</span><strong id="statProgress">0%</strong></div><div class="progress-track"><span id="progressFill"></span></div></div>
       </section>
 
-      <section class="toolbar">
+      <section class="dashboard-view" id="homeDashboard" hidden>
+        <div class="dashboard-hero">
+          <div><div class="eyebrow">YOUR COMMAND CENTRE</div><h2 id="homeGreeting">Good day. Make it count.</h2><p id="homeDateLine">A clear view of what matters next.</p></div>
+          <div class="hero-actions"><button class="primary-add" id="homeAddTask">＋ Capture task</button><button class="outline-btn" id="homeOpenCalendar">Open calendar ↗</button></div>
+        </div>
+        <div class="dashboard-grid">
+          <section class="dash-card focus-card"><div class="dash-card-head"><div><span class="eyebrow">TODAY'S FOCUS</span><h3 id="homeTodayTitle">Today's plan</h3></div><button class="text-action" id="homeTodayOpen">View day ↗</button></div><div class="focus-progress"><div class="focus-ring" id="homeFocusRing"><div><strong id="homeFocusPercent">0%</strong><span>complete</span></div></div><div class="focus-numbers"><div><strong id="homeTodayDone">0</strong><span>Completed</span></div><div><strong id="homeTodayOpenCount">0</strong><span>Remaining</span></div><div><strong id="homeTodayHigh">0</strong><span>Priority</span></div></div></div><div id="homeTodayList" class="dashboard-task-list"></div><button class="wide-quiet" id="homeAddToday">＋ Add to today</button></section>
+          <section class="dash-card week-card"><div class="dash-card-head"><div><span class="eyebrow">NEXT 7 DAYS</span><h3>Upcoming horizon</h3></div><button class="text-action" id="homeWeekOpen">Week view ↗</button></div><div id="homeWeekList" class="upcoming-list"></div></section>
+          <section class="dash-card pulse-card"><div class="dash-card-head"><div><span class="eyebrow">WORKLOAD PULSE</span><h3>Where your time goes</h3></div><span class="pulse-caption">OPEN TASKS</span></div><div id="homeLabelMix" class="label-mix"></div><div class="dash-tip" id="homePlanningTip">A small plan beats a perfect plan.</div></section>
+          <section class="dash-card capture-card"><div class="dash-card-head"><div><span class="eyebrow">QUICK CAPTURE</span><h3>Get it out of your head</h3></div><span class="capture-glyph">✳</span></div><input class="text-field capture-title" id="homeQuickTitle" placeholder="Write a task and press Enter…" maxlength="120"><div class="capture-controls"><input type="date" class="text-field" id="homeQuickDate"><select class="text-field" id="homeQuickLabel" aria-label="Task label"></select><button class="primary-add" id="homeQuickSubmit">Add task</button></div><div class="capture-foot">Saved privately on this device · You can refine details later</div></section>
+        </div>
+      </section>
+
+      <section class="completed-view" id="completedDashboard" hidden>
+        <div class="completed-hero"><div><div class="eyebrow">PROGRESS ARCHIVE</div><h2>Completed work</h2><p>Your finished tasks stay here. Reopen any task whenever it needs another pass.</p></div><div class="completed-total"><strong id="completedTotal">0</strong><span>tasks completed</span></div></div>
+        <div class="completed-tools"><input class="text-field" id="completedSearch" type="search" placeholder="Search completed tasks…"><select class="text-field" id="completedLabel"><option value="all">All labels</option></select><select class="text-field" id="completedPeriod"><option value="all">Any time</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="365">Last year</option></select></div>
+        <div id="completedList" class="completed-list"></div>
+      </section>
+
+      <section class="toolbar" id="toolbar">
         <div class="view-switch" role="tablist" aria-label="Calendar view">
           <button data-view="day" role="tab">Day</button><button data-view="week" role="tab">Week</button><button data-view="month" class="selected" role="tab">Month</button><button data-view="year" role="tab">Year</button>
         </div>
@@ -78,25 +99,16 @@
         </div>
       </section>
 
-      <section class="workspace-grid">
+      <section class="workspace-grid" id="workspaceGrid">
         <div class="calendar-panel">
-          <div class="calendar-panel-head"><div><strong id="calendarTitle">November 2026</strong><span id="calendarHint">Select a date to open its agenda</span></div><div class="panel-head-right"><span class="today-key"><i></i> Today</span><button class="more-btn" id="calendarMore" title="Calendar options">•••</button></div></div>
+          <div class="calendar-panel-head"><div><strong id="calendarTitle">November 2026</strong><span id="calendarHint">Tap a date to open its day details</span></div><div class="panel-head-right"><span class="today-key"><i></i> Today</span><button class="more-btn" id="calendarMore" title="Calendar options">•••</button></div></div>
           <div id="calendarHost" class="calendar-host"></div>
           <div class="calendar-legend" id="calendarLegend"></div>
         </div>
 
-        <aside class="agenda-panel">
-          <div class="agenda-header">
-            <div><div class="eyebrow">DAY AGENDA</div><h2 id="agendaDate">Today</h2><p id="agendaSummary">Your selected day's plan</p></div>
-            <button class="round-add" id="agendaAdd" aria-label="Add task for selected date">＋</button>
-          </div>
-          <div class="agenda-metrics"><div><strong id="agendaOpen">0</strong><span>To do</span></div><div><strong id="agendaDone">0</strong><span>Done</span></div><div><strong id="agendaLabels">0</strong><span>Labels</span></div></div>
-          <div class="agenda-list" id="agendaList"></div>
-          <div class="quick-add"><span>＋</span><input id="quickAddInput" type="text" placeholder="Quick add a task…" autocomplete="off"><button id="quickAddSubmit" aria-label="Add quick task">↵</button></div>
-          <div class="agenda-footer"><span id="agendaFooterText">Nothing slips through the cracks.</span><button id="showDayTasks">Open day list ↗</button></div>
-        </aside>
+
       </section>
-      <footer class="app-footer"><span>DAYMARK <b>•</b> CALM PLANNING, CLEAR DAYS</span><span id="saveStatus">All changes saved on this device</span></footer>
+      <footer class="app-footer"><span>DAYMARK 2.0 <b>•</b> INTENTIONAL PLANNING, VISIBLE PROGRESS</span><span id="saveStatus">All changes saved on this device</span></footer>
     </main>
   </div>
 
@@ -148,8 +160,20 @@
     </section>
   </div>
 
-  <div class="modal-backdrop" id="dayModal" hidden><section class="modal day-modal" role="dialog" aria-modal="true" aria-labelledby="dayModalTitle"><div class="modal-head"><div><div class="eyebrow">YOUR SELECTED DATE</div><h2 id="dayModalTitle">Daily task list</h2></div><button class="close-btn" data-close="dayModal">×</button></div><div id="fullDayList" class="full-day-list"></div><div class="form-actions"><button class="outline-btn" data-close="dayModal">Close</button><button class="primary-add" id="dayModalAdd">＋ Add task</button></div></section></div>
+  <div class="modal-backdrop" id="dayModal" hidden><section class="modal day-modal" role="dialog" aria-modal="true" aria-labelledby="dayModalTitle"><div class="modal-head"><div><div class="eyebrow">DAY DETAIL · ALL YOUR COMMITMENTS</div><h2 id="dayModalTitle">Daily task list</h2><p class="day-modal-sub" id="dayModalSummary">View, complete and reschedule this day's tasks.</p></div><button class="close-btn" data-close="dayModal" aria-label="Close day details">×</button></div><div class="day-modal-stats"><span><strong id="dayModalTotal">0</strong> total</span><span><strong id="dayModalOpen">0</strong> open</span><span><strong id="dayModalDone">0</strong> completed</span></div><div class="day-modal-toolbar"><div class="segmented" id="dayModalTabs"><button class="active" data-day-status="all">All</button><button data-day-status="open">Open</button><button data-day-status="done">Completed</button></div><button class="outline-btn compact-btn" id="dayModalAdd">＋ Add task</button></div><div id="fullDayList" class="full-day-list"></div><div class="day-modal-foot"><span id="dayModalFootHint">Changes save automatically.</span><button class="text-action" id="dayModalClose" data-close="dayModal">Done</button></div></section></div>
 
+  <div class="options-popover" id="optionsPopover" hidden role="menu" aria-label="Calendar and navigation options">
+    <div class="options-title">QUICK NAVIGATION</div>
+    <button data-command="home">⌂ <span><strong>Home dashboard</strong><small>Return to your command centre</small></span></button>
+    <button data-command="calendar">▦ <span><strong>Calendar</strong><small>Month, week, day and year</small></span></button>
+    <button data-command="completed">✓ <span><strong>Completed tasks</strong><small>Review or reopen finished work</small></span></button>
+    <div class="options-divider"></div>
+    <div class="options-title">CALENDAR DISPLAY</div>
+    <button data-command="color-label">● <span><strong>Color by label</strong><small>Organise by area of life</small></span><i id="colorLabelCheck">✓</i></button>
+    <button data-command="color-priority">◆ <span><strong>Color by priority</strong><small>Make urgent tasks stand out</small></span><i id="colorPriorityCheck"></i></button>
+    <button data-command="settings">⚙ <span><strong>Planner settings</strong><small>Notifications, labels and backups</small></span></button>
+  </div>
+  <nav class="mobile-dock" id="mobileDock" aria-label="Main navigation"><button data-command="home" class="active"><span>⌂</span>Home</button><button data-command="calendar"><span>▦</span>Calendar</button><button data-command="completed"><span>✓</span>Done</button><button data-command="settings"><span>⚙</span>Settings</button></nav>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="./app.js" defer></script>
 </body>
